@@ -4,25 +4,28 @@ pipeline {
         maven "MAVEN3.9"
         jdk "JDK17"
     }
-    
+
     environment {
-        registryCredential='nexuslogin'
-        nexusDockerRegistry='192.168.56.201:8081/docker-repo'
-        appRegistry="${nexusDockerRegistry}/vprofileappimg"
+        registryCredential = 'nexuslogin'
+        nexusDockerRegistry = '192.168.56.201:5000/repository/docker-repo'
+        appRegistry = "${nexusDockerRegistry}/vprofileappimg"
     }
 
     stages {
-       stage("Deploy to Prod Docker Engine"){
-            steps{
-                script{
-                   docker.withRegistry("http://${nexusDockerRegistry}", registryCredential) {
-                        sh """
-                            docker stop vprofileapp_prod || true
-                            docker rm vprofileapp_prod || true
-                            docker pull ${appRegistry}:latest
-                            docker run -d --name vprofileapp_prod -p 8082:8080 ${appRegistry}:latest
-                        """
+        stage("Deploy to Prod Docker Engine") {
+            steps {
+                script {
+                    def dockerImage = docker.image("${appRegistry}:latest")
+
+                    docker.withRegistry("http://${nexusDockerRegistry}", registryCredential) {
+                        dockerImage.pull()
                     }
+
+                    sh """
+                        docker stop vprofileapp_prod || true
+                        docker rm vprofileapp_prod || true
+                        docker run -d --name vprofileapp_prod -p 8082:8080 ${appRegistry}:latest
+                    """
                 }
             }
         }
