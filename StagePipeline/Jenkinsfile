@@ -19,7 +19,7 @@ pipeline {
         SONARSCANNER = 'sonarscanner'
 
         registryCredential='nexuslogin'
-        nexusDockerRegistry='192.168.56.201:8081/docker-repo'
+        nexusDockerRegistry='192.168.56.201:5000'
         appRegistry="${nexusDockerRegistry}/vprofileappimg"
     }
 
@@ -105,7 +105,7 @@ pipeline {
         stage("Push Docker Image to Nexus") {
             steps {
                 script {
-                    
+
                     docker.withRegistry("http://${nexusDockerRegistry}", registryCredential) {
                         dockerImage.push("${BUILD_NUMBER}")
                         dockerImage.push("latest")
