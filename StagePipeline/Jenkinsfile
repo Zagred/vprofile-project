@@ -17,8 +17,10 @@ pipeline {
         NEXUS_LOGIN = 'nexuslogin'
         SONARSERVER = 'sonarserver'
         SONARSCANNER = 'sonarscanner'
-        registryCredential='docker-hub-credentials'
+        registryCredential='nexuslogin' 
         appRegistry='pacopandev/vprofileappimg'
+        nexusDockerRegistry='192.168.56.201:8081/docker-repo'
+        appRegistry="${nexusDockerRegistry}/vprofileappimg"
     }
 
     stages {
@@ -96,7 +98,7 @@ pipeline {
         stage("Uplaod app image"){
             steps{
                 script{
-                    docker.withRegistry('https://index.docker.io/v1/', registryCredential){
+                    docker.withRegistry("http://${nexusDockerRegistry}", registryCredential){
                         dockerImage.push("$BUILD_NUMBER")
                         dockerImage.push("latest")
                     }
