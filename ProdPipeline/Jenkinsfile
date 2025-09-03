@@ -6,19 +6,23 @@ pipeline {
     }
     
     environment {
-        appRegistry='pacopandev/vprofileappimg'
+        registryCredential='nexuslogin'
+        nexusDockerRegistry='192.168.56.201:8081/docker-repo'
+        appRegistry="${nexusDockerRegistry}/vprofileappimg"
     }
 
     stages {
        stage("Deploy to Prod Docker Engine"){
             steps{
                 script{
-                    sh """
-                        docker stop vprofileapp_prod || true
-                        docker rm vprofileapp_prod || true
-                        docker pull ${appRegistry}:latest
-                        docker run -d --name vprofileapp_prod -p 8082:8080 ${appRegistry}:latest
-                    """
+                   docker.withRegistry("http://${nexusDockerRegistry}", registryCredential) {
+                        sh """
+                            docker stop vprofileapp_prod || true
+                            docker rm vprofileapp_prod || true
+                            docker pull ${appRegistry}:latest
+                            docker run -d --name vprofileapp_prod -p 8082:8080 ${appRegistry}:latest
+                        """
+                    }
                 }
             }
         }
