@@ -117,10 +117,14 @@ pipeline {
         stage("Deploy to Docker Engine") {
             steps {
                 script {
+                    def dockerImage = docker.image("${appRegistry}:latest")
+                    docker.withRegistry("http://${nexusDockerRegistry}", registryCredential) {
+                        dockerImage.pull()
+                    }
+
                     sh """
                         docker stop vprofileapp || true
                         docker rm vprofileapp || true
-                        docker pull ${appRegistry}:latest
                         docker run -d --name vprofileapp -p 8081:8080 ${appRegistry}:latest
                     """
                 }
