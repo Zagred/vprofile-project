@@ -94,24 +94,26 @@ pipeline {
             }
         }
         
-        stage("Deploy to Staging with Ansible") {
-            steps {
-                sh """
-                  ansible-playbook \
-                    -i ansible/inventory \
-                    ansible/deploy-app.yml \
-                    -e USER=${NEXUS_USER} \
-                    -e PASS=${NEXUS_PASS} \
-                    -e nexusip=${NEXUSIP} \
-                    -e reponame=${RELEASE_REPO} \
-                    -e groupid=QA/vproapp \
-                    -e artifactid=vproapp \
-                    -e build=${BUILD_ID} \
-                    -e time='${BUILD_TIMESTAMP}' \
-                    -e vprofile_version='vproapp-${BUILD_ID}-${BUILD_TIMESTAMP}.war'
-                """
-            }
+stage("Deploy to Staging with Ansible") {
+    steps {
+        script {
+            sh """
+                ansible-playbook \
+                  -i ansible/inventory \
+                  ansible/deploy-app.yml \
+                  -e USER=admin \
+                  -e PASS=rdxx12rd \
+                  -e nexusip=192.168.56.201 \
+                  -e reponame=vprofile-release \
+                  -e groupid=QA/vproapp \
+                  -e artifactid=vproapp \
+                  -e build=${BUILD_NUMBER} \
+                  -e time='${BUILD_TIMESTAMP}' \
+                  -e vprofile_version=vproapp-${BUILD_NUMBER}-${BUILD_TIMESTAMP}.war
+            """
         }
+    }
+}
 
 
         stage("Build Docker Image") {
