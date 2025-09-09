@@ -107,11 +107,12 @@ pipeline {
                     -e groupid=QA/vproapp \
                     -e artifactid=vproapp \
                     -e build=${BUILD_ID} \
-                    -e time=${BUILD_TIMESTAMP} \
-                    -e vprofile_version=vproapp-${BUILD_ID}-${BUILD_TIMESTAMP}.war
+                    -e time='${BUILD_TIMESTAMP}' \
+                    -e vprofile_version='vproapp-${BUILD_ID}-${BUILD_TIMESTAMP}.war'
                 """
             }
         }
+
 
         stage("Build Docker Image") {
             steps {
