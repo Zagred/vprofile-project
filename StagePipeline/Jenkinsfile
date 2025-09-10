@@ -101,9 +101,8 @@ stage('Ansible Deploy to staging') {
             playbook    : 'ansible/site.yml',
             installation: 'ansible',
             colorized   : true,
-            credentialsId: 'vagrant_insecure_key',
+            credentialsId: 'vagrant_insecure_key', 
             disableHostKeyChecking: true,
-            remoteUser: 'vagrant',        
             extraVars   : [
                 USER: "admin",
                 PASS: "${NEXUS_PASS}",
@@ -118,7 +117,6 @@ stage('Ansible Deploy to staging') {
         ])
     }
 }
-
 
 
 
