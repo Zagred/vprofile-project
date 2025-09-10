@@ -94,26 +94,30 @@ pipeline {
             }
         }
         
-stage("Deploy to Staging with Ansible") {
+stage('Ansible Deploy to Staging') {
     steps {
-        script {
-            sh """
-                ansible-playbook \
-                  -i ansible/inventory \
-                  ansible/deploy-app.yml \
-                  -e USER=admin \
-                  -e PASS=rdxx12rd \
-                  -e nexusip=192.168.56.201 \
-                  -e reponame=vprofile-release \
-                  -e groupid=QA/vproapp \
-                  -e artifactid=vproapp \
-                  -e build=${BUILD_NUMBER} \
-                  -e time='${BUILD_TIMESTAMP}' \
-                  -e vprofile_version=vproapp-${BUILD_NUMBER}-${BUILD_TIMESTAMP}.war
-            """
-        }
+        ansiblePlaybook([
+            inventory   : 'ansible/inventory',   // <-- your Vagrant inventory file
+            playbook    : 'ansible/deploy-app.yml',
+            installation: 'ansible',             // name of Ansible installation in Jenkins
+            colorized   : true,
+            credentialsId: 'vagrant-ssh',        // Jenkins credentials for Vagrant key
+            disableHostKeyChecking: true,
+            extraVars   : [
+                USER: "admin",
+                PASS: "${NEXUSPASS}",            // Nexus password from Jenkins credential/env
+                nexusip: "192.168.56.201",       // Nexus VM IP in your VirtualBox hostonly network
+                reponame: "vprofile-release",
+                groupid: "QA/vproapp",           // your repo group path
+                build: "${env.BUILD_ID}",        // Jenkins build ID
+                time: "${env.BUILD_TIMESTAMP}",  // Jenkins timestamp env
+                artifactid: "vproapp",
+                vprofile_version: "vproapp-${env.BUILD_ID}-${env.BUILD_TIMESTAMP}.war"
+            ]
+        ])
     }
 }
+
 
 
         stage("Build Docker Image") {
