@@ -105,7 +105,7 @@ stage('Ansible Deploy to Staging') {
             disableHostKeyChecking: true,
             extraVars   : [
                 USER: "admin",
-                PASS: "${NEXUSPASS}",            // Nexus password from Jenkins credential/env
+                PASS: "${NEXUS_PASS}",            // Nexus password from Jenkins credential/env
                 nexusip: "192.168.56.201",       // Nexus VM IP in your VirtualBox hostonly network
                 reponame: "vprofile-release",
                 groupid: "QA/vproapp",           // your repo group path
